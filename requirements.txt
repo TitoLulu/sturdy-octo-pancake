@@ -1,0 +1,8 @@
+certifi==2024.2.2
+clickhouse-connect==0.7.8
+kafka-python==2.0.2
+lz4==4.3.3
+psycopg2-binary==2.9.9
+pytz==2024.1
+urllib3==2.2.1
+zstandard==0.22.0
