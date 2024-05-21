@@ -1,1 +1,5 @@
 env/
+__pycache__/
+debezium_connector.json
+.env
+db/
