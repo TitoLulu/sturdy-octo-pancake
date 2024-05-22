@@ -1,0 +1,14 @@
+{
+  "name": "rembo-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "db",
+    "database.port": "5432",
+    "database.user": "root",
+    "database.password": "root",
+    "database.dbname": "rembo",
+    "database.server.name": "oltp",
+    "table.include.list": "customer, employee, sales_territory, sales",
+    "topic.prefix": "cdc-using-debezium-topic"
+  }
+}

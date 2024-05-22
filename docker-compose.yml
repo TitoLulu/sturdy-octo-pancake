@@ -86,11 +86,16 @@ services:
         condition: service_healthy
       schema-registry:
         condition: service_healthy
+      debezium:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     ports:
       - "9021:9021"
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: "broker:29092"
       CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_CONNECT_CLUSTER: "http://debezium:8083"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
@@ -107,14 +112,19 @@ services:
 
   db:
     container_name: db
-    image: postgres
+    image: debezium/postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: rembo
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "root"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - confluent
 
@@ -130,5 +140,36 @@ services:
     networks:
       - confluent
 
+  debezium:
+    image: debezium/connect:2.6
+    container_name: debezium
+    environment:
+      BOOTSTRAP_SERVERS: broker:29092
+      CONNECT_GROUP_ID: "debezium-cluster"
+      CONFIG_STORAGE_TOPIC: debezium-config
+      OFFSET_STORAGE_TOPIC: debezium-offset
+      STATUS_STORAGE_TOPIC: debezium-status
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_REST_ADVERTISED_HOST_NAME: "debezium"
+      CONNECT_REST_PORT: 8083
+    depends_on:
+      - broker
+      - db
+    ports:
+      - 8083:8083
+    links:
+      - broker
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - confluent
+
 networks:
   confluent:
+    name: confluent
+    driver: bridge

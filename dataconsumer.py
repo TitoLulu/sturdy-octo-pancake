@@ -3,7 +3,7 @@ import psycopg2
 import os 
 
 from kafka import KafkaConsumer
-from db_connection import get_db_connection
+from db_connect import get_db_connection
 
 def load_customer_data(cur, conn, data):
     sql = """INSERT INTO customer 
@@ -38,7 +38,7 @@ def load_sales_data(cur, conn, data):
 def main():
     conn, cur = get_db_connection()
     consumer = KafkaConsumer(
-        'Customers', 'Sales',
+        'Customers', 'Sales','rembo.public.sales',
         bootstrap_servers=['localhost:9092'],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
@@ -53,6 +53,8 @@ def main():
             load_customer_data(cur=cur, conn=conn,data=msg_val)
         elif topic == 'Sales':
             load_sales_data(cur=cur, conn=conn, data=msg_val)
+        elif topic == 'rembo.public.sales':
+            print(topic)
     conn.close()
 
 if __name__ == '__main__':

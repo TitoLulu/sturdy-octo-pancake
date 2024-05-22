@@ -12,7 +12,7 @@ from kafka import KafkaProducer
 from uuid import uuid4
 from datetime import datetime
 from Countrydetails import countries
-from db_connection import get_db_connection
+from db_connect import get_db_connection
 
 
 

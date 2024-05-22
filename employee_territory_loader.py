@@ -3,7 +3,7 @@ import requests
 
 from Countrydetails import countries
 from datagen import generate_data
-from db_connection import get_db_connection
+from db_connect import get_db_connection
 from uuid import uuid4
 
 
