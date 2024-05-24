@@ -55,8 +55,7 @@ Grafana is also utilized for monitoring and logging the system. It provides real
 
 ## System Architecture Diagram
 
-You can find the system architecture diagram in the (![Architecture Diagram](images/img.jpg)
-) folder.
+![Architecture Diagram](images/img.jpg)
 
 ---
 
