@@ -12,7 +12,6 @@ from kafka import KafkaProducer
 from uuid import uuid4
 from datetime import datetime
 from Countrydetails import countries
-from db_connect import get_db_connection
 
 
 
@@ -74,16 +73,14 @@ def format_customer_data(res):
     return data
 
 
-def generate_sale(cur, conn,  customer_data):
-    sql = """SELECT * FROM employee"""
-    cur.execute(sql)
-    employees = cur.fetchall()
-    employee = random.choice(employees)
+def generate_sale(customer_data):
+    employee = random.randint(1,100)
+
     sales = {
-        "order_date": datetime.now(),
+        "order_date": fk.date_time_between(start_date='-16y', end_date='now'),
         "customer_key": customer_data["customer_key"],
         "sales_amount": random.randint(1,20),
-        "employee_id": employee[0],
+        "employee_id": employee,
         "unit_price": 200
         
     }
@@ -93,20 +90,19 @@ def generate_sale(cur, conn,  customer_data):
 def main():
     #print(json.dumps(data, indent=3))
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'], api_version=(3, 1, 2), max_block_ms=5000)    
-    curr_time = time.time()
 
-    conn,cur = get_db_connection()
     
-
+    counter = 0
     while True:
-        if time.time() > curr_time + 60:
+        if counter > 250:
             break
         try:
             res = generate_data()
             data = format_customer_data(res=res)
-            sale = generate_sale(cur=cur, conn=conn, customer_data=data)
+            sale = generate_sale(customer_data=data)
             producer.send('Customers', json.dumps(data).encode('utf-8'))
             producer.send('Sales', json.dumps(sale,default=str).encode('utf-8'))
+            counter +=1
         except Exception as e:
             logging.error(f'An error occured: {e}')
             continue

@@ -1,11 +1,16 @@
 import random 
 import requests
+import logging
+import json 
 
 from Countrydetails import countries
-from datagen import generate_data
-from db_connect import get_db_connection
+from datagen.customer_sales_datagen import generate_data
+from postgres.postgres_db_connection import get_db_connection
+from clickhouse.clickhouse_db_connection import get_clickhouse_client
 from uuid import uuid4
+from kafka import KafkaProducer
 
+logging.basicConfig(level=logging.INFO)
 
 
 def generate_employee_data(res):
@@ -18,19 +23,6 @@ def generate_employee_data(res):
     employees["employee_territory_region"] = random.choice(data)
     return employees
 
-def load_employee_data(cur, conn, data):
-    for entry in data:
-        sql = """
-        INSERT INTO employee (employee_name, employee_territory_region)
-        VALUES (%s, %s)
-        """
-        cur.execute(sql, (
-            entry["employee_name"],
-            entry["employee_territory_region"]
-        ))
-        conn.commit()
-  
-   
 
 def generate_territories_data():
     regions = []
@@ -49,36 +41,23 @@ def generate_territories_data():
                 regions.append(region_data)
     return regions
 
-def insert_regions_data(cur,conn, regions):
-    for entry in regions:
-        sql = """
-        INSERT INTO sales_territory 
-        (sales_territory_country, sales_territory_city, sales_territory_region) 
-        VALUES (%s, %s, %s)
-        """
-        cur.execute(sql, (
-            entry["sales_territory_country"],
-            entry["sales_territory_city"],
-            entry["sales_territory_region"]
-        ))
-        conn.commit()
-    
 
 def main():
-    conn,cur = get_db_connection()
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'], api_version=(3, 1, 2), max_block_ms=5000) 
     employee_counter = 100
-    employees = []
+    #employees = []
     while employee_counter > 0:
         res = generate_data()
         data = generate_employee_data(res=res)
-        employees.append(data)
+        #employees.append(data)
+        producer.send('Employee', json.dumps(data,default=str).encode('utf-8'))
         employee_counter -= 1
-    load_employee_data(cur=cur, conn=conn,data=employees)
 
     # Generate and insert territory data
     territories = generate_territories_data()
-    insert_regions_data(cur=cur, conn=conn,regions=territories)
-    conn.close()
+    for territory in territories:
+        producer.send('Sales_Territory', json.dumps(territory,default=str).encode('utf-8'))
+  
  
 
 if __name__ == '__main__':

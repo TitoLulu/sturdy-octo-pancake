@@ -1,14 +1,15 @@
 {
-  "name": "rembo-connector",
+  "name": "postgres-connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "db",
+    "tasks.max": "1",
     "database.port": "5432",
     "database.user": "root",
     "database.password": "root",
     "database.dbname": "rembo",
-    "database.server.name": "oltp",
-    "table.include.list": "customer, employee, sales_territory, sales",
-    "topic.prefix": "cdc-using-debezium-topic"
+    "plugin.name": "pgoutput",
+    "topic.prefix": "fulfillment",
+    "slot.name": "debezium_01"
   }
 }

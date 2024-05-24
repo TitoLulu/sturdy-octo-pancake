@@ -1,7 +1,7 @@
 customer_table_drop = "DROP TABLE IF EXISTS Customer;"
-employee_table_drop = "DROP TABLE IF EXISTS Employee;"
-sales_territory_table_drop = "DROP TABLE IF EXISTS Sales_Territory;"
-sales_table_drop = "DROP TABLE IF EXISTS Sales;"
+employee_table_drop = "DROP TABLE IF EXISTS Employee CASCADE;"
+sales_territory_table_drop = "DROP TABLE IF EXISTS Sales_Territory ;"
+sales_table_drop = "DROP TABLE IF EXISTS Sales CASCADE;"
 
 customer_table_create = ("""
     CREATE TABLE IF NOT EXISTS Customer(
@@ -87,5 +87,5 @@ sales_table_create = ("""
     );
 """)
 
-drop_table_queries = [customer_table_drop, employee_table_drop, sales_territory_table_drop, sales_table_drop]
+drop_table_queries = [customer_table_drop, sales_territory_table_drop, employee_table_drop,  sales_table_drop]
 create_table_queries = [customer_table_create, employee_table_create, sales_territory_table_create, sales_table_create]
