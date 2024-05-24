@@ -9,7 +9,6 @@ import consumers.cdc_consumer
 
 logging.basicConfig(level=logging.INFO)
 
-
 def stream_pipeline():
     logging.info("Starting Stream Processing Pipeline")
     create_tables.main()
@@ -25,8 +24,10 @@ def stream_pipeline():
         ]
         logging.info("Streaming Simulation from Source to Sink Started")
         concurrent.futures.wait(futures)
+        logging.info("Streaming Simulation from Source to Sink Completed")
 
 if __name__ == '__main__':
     stream_pipeline()
+
 
 

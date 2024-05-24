@@ -59,7 +59,7 @@ def format_customer_data(res):
     data["birth_date"] = res["dob"]["date"]
     data["age"] = res["dob"]["age"]
     data["email_address"] = res["email"]
-    data["phone"] = res["phone"]
+    data["phone"] = fk.phone_number or '123'
     data["english_occupation"] = random.choice(occupations)
     location = (
         str(res["location"]["street"]["number"])
@@ -68,7 +68,7 @@ def format_customer_data(res):
     
     )
     data["address_line1"] = location
-    data["customer_key"] = fk.passport_number()
+    data["customer_key"] = str(fk.passport_number())
 
     return data
 
@@ -81,7 +81,7 @@ def generate_sale(customer_data):
         "customer_key": customer_data["customer_key"],
         "sales_amount": random.randint(1,20),
         "employee_id": employee,
-        "unit_price": 200
+        "unit_price": random.randint(20, 200)
         
     }
     
@@ -100,7 +100,7 @@ def main():
             res = generate_data()
             data = format_customer_data(res=res)
             sale = generate_sale(customer_data=data)
-            producer.send('Customers', json.dumps(data).encode('utf-8'))
+            producer.send('Customers', json.dumps(data,default=str).encode('utf-8'))
             producer.send('Sales', json.dumps(sale,default=str).encode('utf-8'))
             counter +=1
         except Exception as e:
