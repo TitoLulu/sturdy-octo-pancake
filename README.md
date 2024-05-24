@@ -31,6 +31,7 @@ To set up and run the project, follow these steps:
    Utilize control center to monitor kafka producers, consumers, topics and connectors
 
 6. **Directory Structure**
+   ```bash
    rembo_data_streaming_project/
    │
    ├── services/
@@ -64,3 +65,4 @@ To set up and run the project, follow these steps:
    └── clickhouse/
    ├── clickhouse_db_connection.py
    └── clickhouse_queries.py
+   ```
