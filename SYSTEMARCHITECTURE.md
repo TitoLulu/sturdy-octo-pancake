@@ -12,7 +12,7 @@ This project outlines a highly available real-time data streaming pipeline desig
   - [Kafka](#kafka)
   - [Debezium](#debezium)
   - [Spark](#spark)
-  - [Github Actions](#Github Actions)
+  - [GithubActions](#Github Actions)
 - [Visualization](#visualization)
 - [Monitoring and Logging](#monitoring-and-logging)
 - [System Architecture Diagram](#system-architecture-diagram)
